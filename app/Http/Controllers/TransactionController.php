@@ -150,7 +150,7 @@ class TransactionController extends Controller
                         $hash = hash_file('sha256', $file->getRealPath());
 
                         $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
-                        $path = $file->storeAs("evidence/{$transaction->transaction_code}", $filename, 'public');
+                        $path = $file->storeAs("evidence/{$transaction->transaction_code}", $filename, config('filesystems.default'));
 
                         Evidence::create([
                             'device_id' => $device->id,

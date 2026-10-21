@@ -98,7 +98,7 @@
                                         {{ $item->created_at->format('M d, Y') }}
                                     </span>
 
-                                    @if(Storage::disk('public')->exists($item->file_path))
+                                    @if(Storage::disk(config('filesystems.default'))->exists($item->file_path))
                                         <a href="{{ route('evidence.download', $item) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-box-arrow-up-right me-1"></i>Open File
                                         </a>

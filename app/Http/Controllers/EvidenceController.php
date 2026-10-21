@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Evidence;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class EvidenceController extends Controller
 {
@@ -15,7 +16,7 @@ class EvidenceController extends Controller
 
         abort_unless($transaction && ($transaction->seller_id === $user->id || $transaction->buyer_id === $user->id), 403);
 
-        return \Illuminate\Support\Facades\Storage::disk('public')->download($evidence->file_path, $evidence->file_name);
+        return Storage::disk(config('filesystems.default'))->download($evidence->file_path, $evidence->file_name);
     }
 
     public function index()

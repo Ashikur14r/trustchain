@@ -272,7 +272,7 @@
                                                 </div>
                                             </div>
 
-                                            @if(Storage::disk('public')->exists($ev->file_path))
+                                            @if(Storage::disk(config('filesystems.default'))->exists($ev->file_path))
                                                 <a href="{{ route('evidence.download', $ev) }}" class="btn btn-sm btn-outline-primary">
                                                     <i class="bi bi-eye me-1"></i>View File
                                                 </a>

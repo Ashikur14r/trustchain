@@ -44,3 +44,15 @@ To load example records locally, run `php artisan db:seed`. The seeder creates d
 Copy `.env.example` to `.env` and set values for the environment where the app runs. Before a production deployment, use a strong `APP_KEY`, set `APP_ENV=production` and `APP_DEBUG=false`, configure a production database, and configure a real mail transport for email verification and password resets. Store uploaded evidence on persistent storage and ensure only the `public/` directory is web-accessible.
 
 Never commit `.env` or production credentials. They are excluded by `.gitignore`.
+
+## Deploy to Laravel Cloud
+
+TrustChain is designed to run as a conventional Laravel application. Laravel Cloud can deploy it directly from this repository and provide the persistent services it needs:
+
+1. Connect this GitHub repository to Laravel Cloud and create an application from the `main` branch.
+2. Attach a managed MySQL database and an object storage bucket to the application environment. Cloud supplies their connection settings to the app.
+3. Use the `production` environment with `APP_DEBUG=false`. Cloud can generate and manage `APP_KEY` for the environment.
+4. Set the build command to `composer install --no-dev && npm ci && npm run build` and the deploy command to `php artisan migrate --force`.
+5. Configure a real mail transport before relying on password reset emails.
+
+The evidence upload flow uses Laravel's default filesystem disk, so it works with Cloud object storage when that disk is configured by the environment. Do not run `php artisan db:seed` in production: it creates demo users with the password `password`.
