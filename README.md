@@ -53,6 +53,6 @@ The repository includes a Docker deployment for Render's free web service. The a
 2. In Supabase **Storage → S3**, copy the endpoint, region, access key ID, and secret access key. Keep the secret key private.
 3. In Render, create a Blueprint from this repository's `render.yaml`. Choose the free plan and Singapore region.
 4. Add the Supabase connection values, S3 settings, and a Laravel `APP_KEY` as the environment variables marked as needing a value in Render. Generate a key with `php artisan key:generate --show` and paste it into `APP_KEY`. Set `AWS_BUCKET=trustchain-evidence`. Render runs migrations when the service starts.
-5. Set `APP_URL` to the deployed `https://<service>.onrender.com` address. Configure an email provider before relying on verification or password reset emails.
+5. Set `APP_URL` to the deployed `https://<service>.onrender.com` address. The application trusts Render's proxy headers so generated links use HTTPS. Configure an email provider before relying on verification or password reset emails.
 
 The app stores uploaded evidence on the configured default filesystem disk. Supabase Storage keeps files across Render restarts, while Render's local filesystem is temporary. Do not run `php artisan db:seed` in production: it creates demo users with the password `password`.
