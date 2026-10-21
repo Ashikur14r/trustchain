@@ -1,59 +1,46 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TrustChain
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+TrustChain is a web app for documenting second-hand device sales and recording a buyer's confirmation of a transaction. Sellers create a record for a device, the buyer reviews it, and confirmation issues a certificate that can be checked through a public verification page.
 
-## About Laravel
+## What it does
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Create a transaction with a registered buyer, device details, condition notes, agreed price, and accessories.
+- Attach optional evidence files (JPEG, PNG, WebP, or PDF; up to 10 MB per file). TrustChain calculates a SHA-256 hash for each uploaded file.
+- Let the assigned buyer confirm a pending transaction. Confirmation issues a uniquely numbered certificate with a verification token.
+- Let either participant view the transaction and download its evidence. Transaction and certificate records are limited to their seller and buyer.
+- Search and filter transaction history, view account activity, and manage a profile.
+- Verify a certificate by its number or verification token at `/verify` without signing in.
+- Support optional Google Authenticator (TOTP) two-factor authentication for accounts.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Built with
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2 or newer and Laravel 12
+- SQLite by default (MySQL, MariaDB, PostgreSQL, and SQL Server configuration is also present)
+- Node.js and npm, with Vite, Tailwind CSS, and Alpine.js for frontend assets
 
-## Learning Laravel
+## Run locally
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+You will need PHP with the extensions required by Laravel, Composer, Node.js, and npm.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```sh
+git clone https://github.com/Ashikur14r/trustchain.git
+cd trustchain
+composer install
+cp .env.example .env
+php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');"
+php artisan key:generate
+php artisan migrate
+npm ci
+npm run build
+php artisan serve
+```
 
-## Laravel Sponsors
+The app will be available at `http://localhost:8000`. For frontend hot reload during development, run `npm run dev` in a separate terminal.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+To load example records locally, run `php artisan db:seed`. The seeder creates demo accounts with the password `password`; use this only in a local development database and never seed those accounts into a public or production deployment.
 
-### Premium Partners
+## Configuration notes
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Copy `.env.example` to `.env` and set values for the environment where the app runs. Before a production deployment, use a strong `APP_KEY`, set `APP_ENV=production` and `APP_DEBUG=false`, configure a production database, and configure a real mail transport for email verification and password resets. Store uploaded evidence on persistent storage and ensure only the `public/` directory is web-accessible.
 
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Never commit `.env` or production credentials. They are excluded by `.gitignore`.
