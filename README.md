@@ -45,14 +45,14 @@ Copy `.env.example` to `.env` and set values for the environment where the app r
 
 Never commit `.env` or production credentials. They are excluded by `.gitignore`.
 
-## Deploy to Laravel Cloud
+## Free demo deployment
 
-TrustChain is designed to run as a conventional Laravel application. Laravel Cloud can deploy it directly from this repository and provide the persistent services it needs:
+The repository includes a Docker deployment for Render's free web service. The app uses Supabase's free Postgres database and S3-compatible Storage for durable records and evidence uploads. This setup is intended for a demo: Render may sleep the web service when idle, and Supabase may pause a low-activity free project. Keep independent backups of any important data.
 
-1. Connect this GitHub repository to Laravel Cloud and create an application from the `main` branch.
-2. Attach a managed MySQL database and an object storage bucket to the application environment. Cloud supplies their connection settings to the app.
-3. Use the `production` environment with `APP_DEBUG=false`. Cloud can generate and manage `APP_KEY` for the environment.
-4. Set the build command to `composer install --no-dev && npm ci && npm run build` and the deploy command to `php artisan migrate --force`.
-5. Configure a real mail transport before relying on password reset emails.
+1. Create a free Supabase project. In **Project Settings → Database**, get the connection details and use the session pooler if the direct connection is not reachable from Render. In **Storage**, create a private bucket named `trustchain-evidence` and enable S3 access keys.
+2. In Supabase **Storage → S3**, copy the endpoint, region, access key ID, and secret access key. Keep the secret key private.
+3. In Render, create a Blueprint from this repository's `render.yaml`. Choose the free plan and Singapore region.
+4. Add the Supabase connection values and S3 settings as the environment variables marked as needing a value in Render. Set `AWS_BUCKET=trustchain-evidence`. Render generates `APP_KEY` and runs migrations when the service starts.
+5. Set `APP_URL` to the deployed `https://<service>.onrender.com` address. Configure an email provider before relying on verification or password reset emails.
 
-The evidence upload flow uses Laravel's default filesystem disk, so it works with Cloud object storage when that disk is configured by the environment. Do not run `php artisan db:seed` in production: it creates demo users with the password `password`.
+The app stores uploaded evidence on the configured default filesystem disk. Supabase Storage keeps files across Render restarts, while Render's local filesystem is temporary. Do not run `php artisan db:seed` in production: it creates demo users with the password `password`.
