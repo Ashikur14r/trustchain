@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -22,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'two_factor_secret',
+        'two_factor_enabled',
     ];
 
     /**
@@ -32,6 +35,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
     ];
 
     /**
@@ -46,4 +50,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function soldTransactions(): HasMany
+{
+    return $this->hasMany(Transaction::class, 'seller_id');
+}
+
+public function boughtTransactions(): HasMany
+{
+    return $this->hasMany(Transaction::class, 'buyer_id');
+}
+
+public function allTransactions()
+{
+    return Transaction::where(function ($query) {
+        $query->where('seller_id', $this->id)
+              ->orWhere('buyer_id', $this->id);
+    });
+}
 }
